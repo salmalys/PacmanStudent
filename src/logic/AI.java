@@ -110,6 +110,31 @@ public class AI{
 	 * @return a string describing the next action (among PacManLauncher.UP/DOWN/LEFT/RIGHT)
 	 */
 	public static String findNextMove(BeliefState beliefState) {
+		ArrayList<BeliefState> a = getAllPossibleBeliefStates(beliefState);
+		System.out.println(a.size());
 		return PacManLauncher.LEFT;
 	}
+	public static ArrayList<BeliefState> getAllPossibleBeliefStates(BeliefState initialBeliefState) {
+        return exploreBeliefStates(initialBeliefState, 5);
+    }
+
+    // Fonction récursive pour explorer les BeliefStates
+    private static ArrayList<BeliefState> exploreBeliefStates(BeliefState currentBeliefState, int depth) {
+    	ArrayList<BeliefState> beliefStates = new ArrayList<>();
+
+        if (depth == 0) {
+            beliefStates.add(currentBeliefState);
+            return beliefStates;
+        }
+
+        Plans possiblePlans = currentBeliefState.extendsBeliefState();
+        for (int i = 0; i < possiblePlans.size(); i++) {
+            Result result = possiblePlans.getResult(i);
+            for (BeliefState nextState : result.getBeliefStates()) {
+                beliefStates.addAll(exploreBeliefStates(nextState, depth - 1));
+            }
+        }
+
+        return beliefStates;
+    }
 }
